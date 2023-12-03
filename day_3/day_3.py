@@ -36,13 +36,40 @@ def create_part_data(line):
 
 res = prepend_boarder(input)
 
+total = 0
+symbole = ['*', '-', '&', '+', '/', '$', '@', '=', '#', '%']
+
 for index, line in enumerate(res):
     data = create_part_data(line)
-    print(line)
+    matches = []
     for dict in data:
-        print(index, dict)
+        index_varible = dict.get("index")
+        for i in index_varible:
+            for x in symbole:
+                if (res[index-1][i-1] == x
+                    or res[index-1][i] == x
+                    or res[index-1][i+1] == x
+                    or res[index][i-1] == x
+                    or res[index][i] == x
+                    or res[index][i+1] == x
+                    or res[index+1][i-1] == x
+                    or res[index+1][i] == x
+                    or res[index+1][i+1] == x):
+                    matches.append(dict)
+                    break
 
+    res_list = [i for n, i in enumerate(matches)
+        if i not in matches[:n]]
+    
+    for dict in res_list:
+        part_number = (dict.get("part"))
+        print(part_number)
+        total += int(part_number)
+print(total)
         
+    
+    
+  
         
 
 
