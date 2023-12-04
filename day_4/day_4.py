@@ -36,15 +36,35 @@ def find_matches():
         card_count.append(count)
     return card_count
 
-matches = find_matches()
+def total_of_wins():
+    matches = find_matches()
 
-total = 0
-for i in matches:
-    if i != 0:
-        total_at = 1
-        for x in range(1, i):
-            total_at *=2
-        total += total_at
+    total = 0
+    for i in matches:
+        if i != 0:
+            total_at = 1
+            for x in range(1, i):
+                total_at *=2
+            total += total_at
 
-print(total)
+    return total
+
+def find_instances():
+    matches = find_matches()
+    list_of_cards = [1]*(len(matches))
     
+
+    for index, i in enumerate(list_of_cards):
+        cards = 0
+        match = matches[index]
+        print(list_of_cards[index])
+        
+        while cards < list_of_cards[index]:
+            cards += 1
+            for x in range(match):
+                list_of_cards[index+x+1] = list_of_cards[index+x+1] + 1
+                
+    print(list_of_cards)
+    print(sum(list_of_cards))
+            
+instance = find_instances()
