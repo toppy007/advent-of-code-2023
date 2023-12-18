@@ -1,7 +1,6 @@
 with open ('input.txt', 'r') as file:
     input = file.readlines()
 
-
 result = []
 current_sublist = []
 
@@ -15,7 +14,6 @@ for line in input:
 
 if current_sublist:
     result.append(current_sublist)
-
 
 def transpose_reflection(original):
     transposed = []
@@ -33,11 +31,37 @@ def compare_line(line1, line2):
 
     return True
 
+def compare_line_smug(data):
+    new_data = [list(line) for line in data]
+
+    for i, line1 in enumerate(new_data):
+        for j, line2 in enumerate(new_data):
+            print(line1, j)
+            print(line2, i)
+            
+            print ("------------") 
+            if i != j:
+                
+                count = 0
+                record = 0
+
+                for x in range(len(line1)):
+                    if line1[x] != line2[x]:
+                        record = x
+                        count += 1
+                
+                if count == 1:
+                    new_data[i][record] = '#'
+                    new_data[j][record] = '#'
+                    break
+
+    return new_data
+
+
 def find_short_side(data, line1, line2):
     difference1 = abs(line1 - 0)
     difference2 = abs(line2 - len(data))
 
-    print(difference1, difference2)
     return min(difference1, difference2)
 
 def true_or_false(data, line1, line2):
@@ -45,96 +69,140 @@ def true_or_false(data, line1, line2):
     dif2 = len(data) - line2 
     
     if dif1 < dif2:
-        print('the mirror start', len(data), line1, line2)
         return 0
     elif dif1 >= dif2:
-        print('the mirror at the end')
         return 1
 
-
 trans_total = []
+trans_total_old = []
 all_true = True
 total = []
-count = 0
+final = []
 
 for data in result:
-    count+= 1
-    print('loooking at first mirror', count)
-    for d in data:
-        print(d)
+    trans_tot = 0
+    trans_tot_old = 0
+    tot = 0
+    smug = compare_line_smug(data)
+    
+    old_col = []
+    new_col = []
+    
     for i in range(len(data)-1):
-        pair = compare_line(data[i], data[i+1])
-        if pair == True:
+        print(data[i])
+        pair2 = compare_line(data[i], data[i+1])
+        if pair2 == True:
             start_point = find_short_side(data, i, i+1)
+
             side = true_or_false(data, i, i+1)
-            
+    
             condition_results = ""
             up_value = (i)
             
             if side == 0:
                 for x in range(0, start_point+1):
-                    print(condition_results)
-                    print('is lower', start_point, condition_results, i-x, i+1+x)
                     pair = compare_line(data[i-x], data[i+1+x])
                     condition_results += str(pair)
             elif side == 1:
                 for x in range(0, start_point):
-                    print('is higher', start_point, condition_results, i-x, i+1+x)
                     pair = compare_line(data[i-x], data[i+1+x])
-                    print(data[i-x], data[i+1+x])
                     condition_results += str(pair)
-                    print(condition_results)
-            
             if 'False' not in condition_results:
-                print(condition_results)
-                print('mirror found')
-                trans_total.append(i+1)
-                break
-                
-    else:
-        print('loooking at transposed mirror')
-        trans = transpose_reflection(data)
-        for t in trans:
-            print(t)
-
-        for i in range(len(trans)-1):
-            pair = compare_line(trans[i], trans[i+1])
-            print(pair)
-            if pair == True:
-                print(i, i+1)
-        
-                start_point = find_short_side(trans, i, i+1)
-                side = true_or_false(trans, i, i+1)
-
-                condition_results = ""
-                up_value = (i)
-                
-                if side == 0:
-                    print('is lowed than half')
-                    for x in range(0, start_point+1):
-                        print(start_point, condition_results, i-x, i+1+x)
-                        pair = compare_line(trans[i-x], trans[i+1+x])
-                        print(condition_results)
-                        condition_results += str(pair)
-                elif side == 1:   
-                    for x in range(0, start_point):
-                        print(start_point, condition_results, i-x, i+1+x)
-                        print(condition_results)
-                        pair = compare_line(trans[i-x], trans[i+1+x])
-                        condition_results += str(pair)
-                        
-                if 'False' not in condition_results:
-                    print(condition_results)
-                    print('mirror found')
-                    total.append(i+1)
+                old_col.append(i+1)
     
-                    break
+    print('-------------')
+    
+    for i in range(len(smug)-1):
+        pair2 = compare_line(smug[i], smug[i+1])
+        print(smug[i])
+        if pair2 == True:
+            start_point = find_short_side(smug, i, i+1)
+            side = true_or_false(smug, i, i+1)
+    
+            condition_results = ""
+            up_value = (i)
+            
+            if side == 0:
+                for x in range(0, start_point+1):
+                    pair = compare_line(smug[i-x], smug[i+1+x])
+                    condition_results += str(pair)
+            elif side == 1:
+                for x in range(0, start_point):
+                    pair = compare_line(smug[i-x], smug[i+1+x])
+                    condition_results += str(pair)
+            if 'False' not in condition_results:
+                print('try', i+1)
+                new_col.append(i+1)
+                
+    print(new_col, old_col)
+    
+    for i in old_col:
+        new_col.remove(i)
+    
+    if len(new_col) > 0:       
+        trans_tot_old = new_col[0] 
+            
+    trans = transpose_reflection(data)
+    trans_smug = compare_line_smug(trans)
+    
+    old = []
+    new = []
 
+    for i in range(len(trans)-1):
+        pair = compare_line(trans[i], trans[i+1])
+        if pair == True:
+            
+            start_point = find_short_side(trans, i, i+1)
+            side = true_or_false(trans, i, i+1)
 
-print(total)
+            condition_results = ""
+            up_value = (i)
+            
+            if side == 0:
+                for x in range(0, start_point+1):
+                    pair = compare_line(trans[i-x], trans[i+1+x])
+                    condition_results += str(pair)
+            elif side == 1:   
+                for x in range(0, start_point):
+                    pair = compare_line(trans[i-x], trans[i+1+x])
+                    condition_results += str(pair) 
+            if 'False' not in condition_results:
+                old.append(i+1)
+            
+    for i in range(len(trans_smug)-1):
+        pair = compare_line(trans_smug[i], trans_smug[i+1])
+        if pair == True:
+            start_point = find_short_side(trans_smug, i, i+1)
+            side = true_or_false(trans_smug, i, i+1)
+
+            condition_results = ""
+            up_value = (i)
+            
+            if side == 0:
+                for x in range(0, start_point+1):
+                    pair = compare_line(trans_smug[i-x], trans_smug[i+1+x])
+                    condition_results += str(pair)
+            elif side == 1:   
+                for x in range(0, start_point):
+                    pair = compare_line(trans_smug[i-x], trans_smug[i+1+x])
+                    condition_results += str(pair)      
+            if 'False' not in condition_results:
+                new.append(i+1)
+        
+    for i in old:
+        new.remove(i)
+    
+    if len(new) > 0:       
+        tot = new[0]        
+
+    if trans_tot == trans_tot_old:
+        final.append(tot)
+    else:
+        trans_tot *= 100
+        final.append(trans_tot)
+
+print(trans_total_old)
 print(trans_total)
-
-
-print(sum(total))
-print(sum(trans_total))
-print(sum(total) + ((sum(trans_total))*100))
+print('total',total)
+print(final)
+print((sum(final))) 
